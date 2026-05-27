@@ -1,7 +1,7 @@
 """Render training_curves.png from a JSONL log written by train.py.
 
 Usage:
-    python plot.py [log_path] [--out training_curves.png]
+    python viz/plot.py [log_path] [--out training_curves.png]
 
 The log has three row types (one JSON object per line):
   - meta:  recorded at start; contains argparse args + start time
@@ -21,6 +21,8 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+HERE = Path(__file__).resolve().parent
 
 
 def parse_log(path: Path):
@@ -53,8 +55,8 @@ def ema(xs, span=10):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("log_path", nargs="?", default="training_log.jsonl")
-    p.add_argument("--out", default="training_curves.png")
+    p.add_argument("log_path", nargs="?", default=str(HERE / "training_log.jsonl"))
+    p.add_argument("--out", default=str(HERE / "training_curves.png"))
     args = p.parse_args()
 
     log_path = Path(args.log_path)
