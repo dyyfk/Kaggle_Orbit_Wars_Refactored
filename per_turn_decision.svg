@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="820" viewBox="0 0 820 820">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#222"/>
+    </marker>
+    <marker id="arr-rule" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#b04200"/>
+    </marker>
+    <style type="text/css"><![CDATA[
+      .box   { fill: #ffffff; stroke: #222; stroke-width: 1.5; }
+      .rule  { fill: #ffe0b3; stroke: #222; stroke-width: 1.5; }
+      .cand  { fill: #d8e8f8; stroke: #222; stroke-width: 1.5; }
+      .lbl   { font-family: Arial, Helvetica, sans-serif; font-size: 13px; fill: #222; text-anchor: middle; }
+      .lblsmall { font-family: Arial, Helvetica, sans-serif; font-size: 11px; fill: #222; text-anchor: middle; }
+      .head  { font-family: Arial, Helvetica, sans-serif; font-size: 16px; fill: #222; text-anchor: middle; font-style: italic; }
+      .annot { font-family: Arial, Helvetica, sans-serif; font-size: 11px; fill: #666; text-anchor: middle; font-style: italic; }
+      .annot-rule { font-family: Arial, Helvetica, sans-serif; font-size: 11px; fill: #b04200; text-anchor: middle; font-style: italic; }
+      .title { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fill: #222; text-anchor: middle; font-weight: bold; }
+      .branchlbl { font-family: Arial, Helvetica, sans-serif; font-size: 12px; fill: #222; text-anchor: middle; font-weight: bold; }
+      .a      { stroke: #222; stroke-width: 1.3; fill: none; }
+      .a-rule { stroke: #b04200; stroke-width: 1.6; fill: none; }
+    ]]></style>
+  </defs>
+
+  <text x="410" y="22" class="title">Per-turn decision pipeline   (training vs eval)</text>
+
+  <!-- Top: observation -->
+  <text x="410" y="58" class="head">observation  o<tspan baseline-shift="sub" font-size="10">t</tspan>   (game state)</text>
+
+  <!-- Block 1: defense reserves + defense moves -->
+  <rect x="210" y="76" width="400" height="48" class="rule"/>
+  <text x="410" y="96" class="lbl">Defense reserves   +   spend on threatened planets</text>
+  <text x="410" y="114" class="annot-rule">reserve = max(2, 2&#183;prod), bumped to cover incoming hits</text>
+  <line x1="410" y1="76" x2="410" y2="62" class="a" marker-end="url(#arr)"/>
+
+  <!-- Block 2: build attack candidates -->
+  <rect x="210" y="152" width="400" height="48" class="cand"/>
+  <text x="410" y="172" class="lbl">Build attack candidates   (source &#215; target combos)</text>
+  <text x="410" y="190" class="annot">iterated future-position aim;  K candidates total</text>
+  <line x1="410" y1="152" x2="410" y2="124" class="a" marker-end="url(#arr)"/>
+
+  <!-- Block 3: hard-rule filter -->
+  <rect x="210" y="228" width="400" height="48" class="rule"/>
+  <text x="410" y="248" class="lbl">Hard-rule filter   (drop illegal candidates)</text>
+  <text x="410" y="266" class="annot-rule">sun-crossing,  comet life,  budget,  finite angle</text>
+  <line x1="410" y1="228" x2="410" y2="200" class="a" marker-end="url(#arr)"/>
+
+  <!-- Block 4: score each candidate -->
+  <rect x="210" y="304" width="400" height="48" class="box"/>
+  <text x="410" y="324" class="lbl">Score each:   s<tspan baseline-shift="sub" font-size="10">k</tspan>  =  rule<tspan baseline-shift="sub" font-size="10">k</tspan>  +  &#916;<tspan baseline-shift="sub" font-size="10">k</tspan></text>
+  <text x="410" y="342" class="annot">|&#916;<tspan baseline-shift="sub" font-size="10">k</tspan>| &#8804; MLP_DELTA_LIMIT = 100   (scaled tanh cap)</text>
+  <line x1="410" y1="304" x2="410" y2="276" class="a" marker-end="url(#arr)"/>
+
+  <!-- Fork header -->
+  <text x="410" y="378" class="head">pick first move of the turn</text>
+
+  <!-- Fork left: TRAIN (sample) -->
+  <rect x="50" y="396" width="320" height="76" class="box"/>
+  <text x="210" y="416" class="branchlbl">TRAIN   (rollout)</text>
+  <text x="210" y="436" class="lblsmall">top-1  ~  softmax( s / T )   ,   T = 3.0</text>
+  <text x="210" y="453" class="lblsmall">log  (features, rule_scores, chosen)</text>
+  <text x="210" y="468" class="annot">on-policy;  only this step carries gradient</text>
+
+  <!-- Fork right: EVAL (argmax) -->
+  <rect x="450" y="396" width="320" height="76" class="box"/>
+  <text x="610" y="416" class="branchlbl">EVAL   (greedy)</text>
+  <text x="610" y="436" class="lblsmall">top-1  =  argmax  s<tspan baseline-shift="sub" font-size="10">k</tspan></text>
+  <text x="610" y="453" class="lblsmall">no logging,  no gradient</text>
+  <text x="610" y="468" class="annot">deterministic;  used by main.agent on Kaggle</text>
+
+  <!-- Arrows from score block diverging to both forks -->
+  <line x1="370" y1="352" x2="240" y2="396" class="a" marker-end="url(#arr)"/>
+  <line x1="450" y1="352" x2="580" y2="396" class="a" marker-end="url(#arr)"/>
+
+  <!-- Block 5: greedy fill rest of budget -->
+  <rect x="210" y="510" width="400" height="48" class="cand"/>
+  <text x="410" y="530" class="lbl">Greedy fill remaining budget   (by score, desc)</text>
+  <text x="410" y="548" class="annot">no log_prob recorded   &#8226;   skip claimed targets / overspend</text>
+
+  <!-- Arrows from both forks converging to greedy fill -->
+  <line x1="240" y1="472" x2="370" y2="510" class="a" marker-end="url(#arr)"/>
+  <line x1="580" y1="472" x2="450" y2="510" class="a" marker-end="url(#arr)"/>
+
+  <!-- Block 6: sanitize moves -->
+  <rect x="210" y="586" width="400" height="48" class="rule"/>
+  <text x="410" y="606" class="lbl">Sanitize moves</text>
+  <text x="410" y="624" class="annot-rule">cap MAX_MOVES_PER_TURN = 12  &#8226;  drop overspend / invalid angle</text>
+  <line x1="410" y1="586" x2="410" y2="558" class="a" marker-end="url(#arr)"/>
+
+  <!-- Out: moves to env -->
+  <text x="410" y="666" class="head">moves   &#8594;   env</text>
+  <line x1="410" y1="654" x2="410" y2="634" class="a" marker-end="url(#arr)"/>
+
+  <!-- Side annotations -->
+  <text x="630" y="100" class="annot" text-anchor="start">runs first;  defense has priority on budget</text>
+  <text x="630" y="176" class="annot" text-anchor="start">see build_attack_candidates</text>
+  <text x="630" y="252" class="annot-rule" text-anchor="start">MLP cannot invent illegal moves</text>
+  <text x="630" y="328" class="annot" text-anchor="start">rule_score is also a feature</text>
+
+  <!-- Legend -->
+  <text x="60" y="730" class="annot-rule" text-anchor="start">&#9632; orange  =  rule-only step   (defense, hard filter, sanitize)</text>
+  <text x="60" y="748" class="annot" text-anchor="start">&#9633; white   =  scoring + policy choice   (uses learned &#916;)</text>
+  <text x="60" y="766" class="annot" text-anchor="start">&#9632; blue    =  candidate generation / greedy fill   (no gradient)</text>
+  <text x="60" y="784" class="annot" text-anchor="start">note:   only one branch fires per turn   (train OR eval, never both)</text>
+
+</svg>

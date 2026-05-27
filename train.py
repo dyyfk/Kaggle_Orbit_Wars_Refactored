@@ -525,6 +525,11 @@ def main_cli():
     p.add_argument("--out", default="weights_block.txt")
     p.add_argument("--apply", action="store_true",
                    help="Rewrite main.py with the best snapshot at the end.")
+    p.add_argument("--log-path", default="training_log.jsonl",
+                   help="Per-step and per-eval metrics are appended here as JSONL. "
+                        "Render with `python plot.py <log-path>`.")
+    p.add_argument("--plot", action="store_true",
+                   help="At end of training, run plot.py to render training_curves.png.")
     args = p.parse_args()
 
     device = (
@@ -544,6 +549,12 @@ def main_cli():
     optim = torch.optim.Adam(policy.parameters(), lr=args.lr)
     eval_seeds = parse_seed_range(args.eval_seeds)
 
+    log_path = ROOT / args.log_path
+    log_f = open(log_path, "w", encoding="utf-8")
+    log_f.write(json.dumps({"type": "meta", "args": vars(args),
+                            "started_at": time.time()}) + "\n")
+    log_f.flush()
+
     pool_ctx = ProcessPoolExecutor(max_workers=args.workers) if args.workers > 0 else _NoPool()
     with pool_ctx as pool:
         pool_obj = pool if args.workers > 0 else None
@@ -554,6 +565,12 @@ def main_cli():
         print(f"  baseline: win={base.win:.3f}+/-{base.win_ci:.3f} margin={base.margin:+d} "
               f"flips={base.flip_rate:.1%} |delta|max={base.mean_max_delta:.2f} "
               f"(N={base.n})", flush=True)
+        log_f.write(json.dumps({"type": "eval", "step": 0, "win": base.win,
+                                "win_ci": base.win_ci, "margin": base.margin,
+                                "flip_rate": base.flip_rate,
+                                "mean_max_delta": base.mean_max_delta,
+                                "n": base.n}) + "\n")
+        log_f.flush()
 
         best_win = base.win
         best_margin = base.margin
@@ -616,6 +633,12 @@ def main_cli():
             print(f"[{step:4d}/{args.steps}] batch_win={wins}/{len(rewards_by_player)} "
                   f"return_mean={returns.mean().item():+.3f} loss={loss_val:+.4f} "
                   f"({elapsed:.1f}s)", flush=True)
+            log_f.write(json.dumps({"type": "step", "step": step,
+                                    "loss": loss_val, "batch_win": wins,
+                                    "batch_total": len(rewards_by_player),
+                                    "return_mean": float(returns.mean().item()),
+                                    "elapsed": elapsed}) + "\n")
+            log_f.flush()
 
             if step % args.eval_every == 0:
                 ev = evaluate_greedy(args.eval_opponents, eval_seeds,
@@ -630,6 +653,15 @@ def main_cli():
                 print(f"  {tag} eval: win={ev.win:.3f}+/-{ev.win_ci:.3f} margin={ev.margin:+d} "
                       f"flips={ev.flip_rate:.1%} |delta|max={ev.mean_max_delta:.2f} "
                       f"(best win={best_win:.3f})", flush=True)
+                log_f.write(json.dumps({"type": "eval", "step": step,
+                                        "win": ev.win, "win_ci": ev.win_ci,
+                                        "margin": ev.margin,
+                                        "flip_rate": ev.flip_rate,
+                                        "mean_max_delta": ev.mean_max_delta,
+                                        "n": ev.n}) + "\n")
+                log_f.flush()
+
+    log_f.close()
 
     # Restore best snapshot and export
     policy.load_state_dict(best_state[0])
@@ -639,9 +671,14 @@ def main_cli():
     save_weights_block(out_path, policy, best_mean, best_std)
     print(f"\nBest eval win={best_win:.3f}, margin={best_margin:+d}")
     print(f"Saved weights block to {out_path}")
+    print(f"Training log: {log_path}")
     if args.apply:
         apply_block_to_main(out_path)
         print("Rewrote main.py with the best snapshot.")
+    if args.plot:
+        import subprocess
+        subprocess.run([sys.executable, str(ROOT / "plot.py"), str(log_path)],
+                       check=False)
 
 
 if __name__ == "__main__":

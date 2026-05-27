@@ -1,0 +1,26 @@
+{"type": "meta", "args": {"steps": 20, "batch": 8, "workers": 4, "lr": 0.0003, "temp": 3.0, "opponents": ["self", "medium.py", "starter"], "eval_every": 5, "eval_seeds": "1..15", "eval_opponents": ["medium.py", "starter"], "device": "auto", "seed": 0, "out": "weights_block.txt", "apply": false, "log_path": "training_log.jsonl", "plot": true}, "started_at": 1779877903.7682776}
+{"type": "eval", "step": 0, "win": 0.5333333333333333, "win_ci": 0.126235992989028, "margin": -39990, "flip_rate": 0.008641975308641974, "mean_max_delta": 0.04387920278034032, "n": 60}
+{"type": "step", "step": 1, "loss": 0.044082969427108765, "batch_win": 4, "batch_total": 8, "return_mean": 0.0, "elapsed": 15.052827596664429}
+{"type": "step", "step": 2, "loss": 0.10905199497938156, "batch_win": 3, "batch_total": 8, "return_mean": -0.25, "elapsed": 20.75632905960083}
+{"type": "step", "step": 3, "loss": 0.04057544097304344, "batch_win": 4, "batch_total": 8, "return_mean": 0.0, "elapsed": 8.070202350616455}
+{"type": "step", "step": 4, "loss": 0.27218541502952576, "batch_win": 5, "batch_total": 8, "return_mean": 0.25, "elapsed": 12.275066375732422}
+{"type": "step", "step": 5, "loss": 0.3559989929199219, "batch_win": 6, "batch_total": 8, "return_mean": 0.5, "elapsed": 5.622025728225708}
+{"type": "eval", "step": 5, "win": 0.5333333333333333, "win_ci": 0.126235992989028, "margin": -39990, "flip_rate": 0.007160493827160494, "mean_max_delta": 0.02048334119595984, "n": 60}
+{"type": "step", "step": 6, "loss": 0.13957400619983673, "batch_win": 5, "batch_total": 8, "return_mean": 0.25, "elapsed": 7.689046621322632}
+{"type": "step", "step": 7, "loss": -0.09003828465938568, "batch_win": 2, "batch_total": 8, "return_mean": -0.5, "elapsed": 12.64550518989563}
+{"type": "step", "step": 8, "loss": 0.1171596497297287, "batch_win": 5, "batch_total": 8, "return_mean": 0.25, "elapsed": 6.813399314880371}
+{"type": "step", "step": 9, "loss": 0.109029620885849, "batch_win": 5, "batch_total": 8, "return_mean": 0.25, "elapsed": 11.349846124649048}
+{"type": "step", "step": 10, "loss": 0.3552783727645874, "batch_win": 5, "batch_total": 8, "return_mean": 0.25, "elapsed": 9.103366374969482}
+{"type": "eval", "step": 10, "win": 0.5333333333333333, "win_ci": 0.126235992989028, "margin": -39990, "flip_rate": 0.007654320987654321, "mean_max_delta": 0.020174303969166738, "n": 60}
+{"type": "step", "step": 11, "loss": 0.10392576456069946, "batch_win": 4, "batch_total": 8, "return_mean": 0.0, "elapsed": 13.719097137451172}
+{"type": "step", "step": 12, "loss": -0.21636046469211578, "batch_win": 3, "batch_total": 8, "return_mean": -0.25, "elapsed": 15.977659225463867}
+{"type": "step", "step": 13, "loss": 0.05146370083093643, "batch_win": 4, "batch_total": 8, "return_mean": 0.0, "elapsed": 14.627032279968262}
+{"type": "step", "step": 14, "loss": -0.08528397232294083, "batch_win": 2, "batch_total": 8, "return_mean": -0.5, "elapsed": 20.075418949127197}
+{"type": "step", "step": 15, "loss": 0.12305041402578354, "batch_win": 4, "batch_total": 8, "return_mean": 0.0, "elapsed": 10.055361032485962}
+{"type": "eval", "step": 15, "win": 0.5333333333333333, "win_ci": 0.126235992989028, "margin": -39990, "flip_rate": 0.007654320987654321, "mean_max_delta": 0.021328154274890963, "n": 60}
+{"type": "step", "step": 16, "loss": -0.10226333141326904, "batch_win": 1, "batch_total": 8, "return_mean": -0.75, "elapsed": 10.329915046691895}
+{"type": "step", "step": 17, "loss": 0.21944859623908997, "batch_win": 5, "batch_total": 8, "return_mean": 0.25, "elapsed": 11.925240278244019}
+{"type": "step", "step": 18, "loss": 0.13369396328926086, "batch_win": 4, "batch_total": 8, "return_mean": 0.0, "elapsed": 25.975837230682373}
+{"type": "step", "step": 19, "loss": 0.2304946631193161, "batch_win": 4, "batch_total": 8, "return_mean": 0.0, "elapsed": 11.509770393371582}
+{"type": "step", "step": 20, "loss": -0.0009421843569725752, "batch_win": 2, "batch_total": 8, "return_mean": -0.5, "elapsed": 16.51950716972351}
+{"type": "eval", "step": 20, "win": 0.5333333333333333, "win_ci": 0.126235992989028, "margin": -39990, "flip_rate": 0.008395061728395062, "mean_max_delta": 0.023208110710445543, "n": 60}
