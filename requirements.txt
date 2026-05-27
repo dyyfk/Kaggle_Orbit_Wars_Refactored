@@ -1,0 +1,5 @@
+kaggle-environments>=1.16
+# Training-only deps. The Kaggle submission file (main.py) does not need these.
+numpy>=1.24
+torch>=2.0
+pytest>=8.0
